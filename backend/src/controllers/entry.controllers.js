@@ -7,7 +7,7 @@ import { dataValidator } from "../utils/dataValidator.js";
 
 const addEntry = asyncHandler(async(req,res,next)=>{
     const { entry } = req.body;
-    if(!dataValidator(entry,"entry")){
+    if(!dataValidator(req.body,["entry"])){
         throw new ApiError(400,"Please write something in the diary");
     }
     const userId = req.user._id;
@@ -21,20 +21,19 @@ const addEntry = asyncHandler(async(req,res,next)=>{
 });
 
 const getAllEntries = asyncHandler(async(req,res,next)=>{
-    const entries = await Journal.find(req.user._id).sort({timestamp:-1});
+    let query = {user:req.user._id};
     const date = req.params.date;
     if(date){
-        const entries = await Journal.find({user:req.user._id,date}).sort({timestamp:-1});
-        if(!entries){
-            throw new ApiError(404,"No entry exist of the date");
-        }
-        return res
-        .status(200)
-        .json(new ApiResponse(200,entries,"All entries are fetched"));
+        const [year,month,day] = date.split("-");
+        const startDay = new Date(year,month-1,day,0,0,0,0);
+        const endDay = new Date(year,month-1,day,23,59,59,999);
+        query.date = {$gte:startDay,$lte:endDay};
     }
+    const entries = await Journal.find(query).sort({date:-1});
+
     return res
     .status(200)
-    .json(new ApiResponse(200,entries,"All entries are fetched"));
+    .json(new ApiResponse(200,entries,entries.length > 0 ?"All entries are fetched" : "No entries found"));
 });
 
 export {addEntry,getAllEntries};

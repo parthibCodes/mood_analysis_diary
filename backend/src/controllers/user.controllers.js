@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { dataValidator } from "../utils/dataValidator.js";
+import { userAuth } from "../middlewares/user.auth.js";
 
 
 const options = {
@@ -10,18 +11,24 @@ const options = {
     secure:true
 }
 
-const generateAccessAndRefreshToken = asyncHandler(async (userId)=>{
+const generateAccessAndRefreshToken = async (userId)=>{
     try {
         const user = await User.findById(userId);
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
+        if(!user){
+            throw new ApiError(404, "User not found while generating tokens");
+        }
+
+        const accessToken = await user.generateAccessToken();
+        const refreshToken = await user.generateRefreshToken();
         user.refreshToken = refreshToken;
         await user.save({validateBeforeSave:false});
         return {accessToken,refreshToken};
-    } catch (error) {
+    } 
+    catch (error) {
+        console.error("generateAccessAndRefreshToken error:", error);
         throw new ApiError(500,"Something went wrong during generating access and refresh token");
     }
-});
+};
 
 const registerUser = asyncHandler(async(req,res,next) =>{
     const {name,email,password} = req.body;
@@ -61,7 +68,7 @@ const loginUser = asyncHandler(async(req,res,next)=>{
     if(!isCorrectPassword){
         throw new ApiError(400,"Incorrect password");
     }
-    const { accessToken,refreshToken } = generateAccessAndRefreshToken(user._id);
+    const { accessToken,refreshToken } = await generateAccessAndRefreshToken(user._id);
     const userObj = user.toObject();
     delete userObj.password;
     return res
@@ -72,6 +79,9 @@ const loginUser = asyncHandler(async(req,res,next)=>{
 });
 
 const logoutUser = asyncHandler(async(req,res,next)=>{
+    if(!req.user){
+        throw new ApiError(401,"Unauthorized request");
+    }
     await User.findByIdAndUpdate(
         req.user._id,
         {refreshToken:undefined},

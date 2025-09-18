@@ -12,6 +12,12 @@ app.use(cookieParser());
 const port = process.env.PORT || 3000;
 connectDB();
 
+import userRoutes from "./routes/user.routes.js";
+app.use("/api/v0/users",userRoutes);
+
+import journalRoutes from "./routes/journal.routes.js";
+app.use("/api/v0/journal",journalRoutes);
+
 app.listen(port,()=>{
     console.log(`Server is running on port ${port}`);
 });

@@ -28,8 +28,8 @@ const userSchema = new Schema({
 },{timestamps:true});
 
 userSchema.pre("save",async function (next){
-    if(!this.modified("password")) return next();
-    this.password = bcrypt.hash(this.password,10);
+    if(!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password,10);
     next();
 });
 
@@ -39,14 +39,14 @@ userSchema.methods.comparePassword = async function(password){
 
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign({
-        id:this.id,
-    },process.env.ACCESS_TOKEN_SECRET,{expiresIn:"15m"});
+        _id:this._id,
+    },process.env.SECRET_ACCESS_TOKEN,{expiresIn:"15m"});
 }
 
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign({
-        id:this.id
-    },process.env.REFRESH_TOKEN_SECRET,{expiresIn:"7d"});
+        _id:this._id
+    },process.env.SECRET_REFRESH_TOKEN,{expiresIn:"7d"});
 }
 
-export const User = new model("User",userSchema);
+export const User = model("User",userSchema);
