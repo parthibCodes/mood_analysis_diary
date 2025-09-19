@@ -36,4 +36,35 @@ const getAllEntries = asyncHandler(async(req,res,next)=>{
     .json(new ApiResponse(200,entries,entries.length > 0 ?"All entries are fetched" : "No entries found"));
 });
 
-export {addEntry,getAllEntries};
+const editEntries = asyncHandler(async(req,res,next)=>{
+    const userId = req.user._id;
+    const {entry} = req.body;
+    const { journalId } = req.params;
+    if(!entry){
+        throw new ApiError(400,"Entry text is required");
+    }
+    const editedEntry = await Journal.findOneAndUpdate({_id:journalId,user:userId},{entry},{new:true});
+    if(!editedEntry){
+        throw new ApiError(404,"Entry not found or not authorized");
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,editedEntry,"Entry has been updated"));
+});
+
+const deleteEntries = asyncHandler(async(req,res,next)=>{
+    const { journalId } = req.params;
+    const userId = req.user._id;
+    if(!journalId){
+        throw new ApiError(404,"Journal doesn't exist");
+    }
+    const deletedEntry = await Journal.findOneAndDelete({_id:journalId,user:userId});
+    if (!deletedEntry) {
+        throw new ApiError(404, "Entry not found or not authorized");
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{},"Journal deleted successfully"));
+});
+
+export {addEntry,getAllEntries,editEntries,deleteEntries};
