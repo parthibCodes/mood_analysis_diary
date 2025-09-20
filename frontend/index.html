@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Diary</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+</head>
+<body>
+    <div class="container">
+        <form action="" id="loginForm" class="form-visible">
+            <h1>Login</h1>
+            <div class="input-box">
+                <input type="text" placeholder="Email" required="true">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Password" required="true">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="remember-password">
+                <label><input type="checkbox">Remember Me</label>
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn" id="submitLoginForm">Login</button>
+            <div class="register-link">
+                <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+            </div>
+        </form>
+        <form action="" id="registerForm" class="form-hidden">
+            <div class="input-box">
+                <input type="email" placeholder="Email" required="true">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Name" required="true">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Password" required="true">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <button type="submit" class="btn" id="submitRegisterForm">Register</button>
+            <div class="register-link">
+                <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+            </div>
+        </form>
+    </div>
+    <script src="./script.js" defer></script>
+</body>
+</html>
