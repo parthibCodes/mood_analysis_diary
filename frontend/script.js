@@ -19,21 +19,21 @@ showLogin.addEventListener("click", (e) => {
 registerForm.addEventListener("submit",async(e)=>{
     e.preventDefault();
     const email = registerForm.querySelector("input[type='email']").value;
-    const username = registerForm.querySelector("input[placeholder='Name']").value;
+    const name = registerForm.querySelector("input[placeholder='Name']").value;
     const password = registerForm.querySelector("input[type='password']").value;
 
     try {
         const res = await fetch("http://localhost:5000/api/v0/users/register",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({email,username,password}),
+            body:JSON.stringify({email,name,password}),
         });
         const data = await res.json();
         if(res.ok){
             alert("Registered successfully");
         }
         else{
-            alert(data.message || "Something went wrong");
+            alert(data.message || "Something went wrong during sign up");
         }
     } catch (error) {
         console.error(error);
@@ -41,7 +41,25 @@ registerForm.addEventListener("submit",async(e)=>{
     }
 });
 
-// const submitLoginForm = document.getElementById("submitLoginForm");
-// submitLoginForm.addEventListener("click",(e)=>{
-
-// })
+loginForm.addEventListener("submit",async(e)=>{
+    e.preventDefault();
+    const email = loginForm.querySelector("input[type='email']").value;
+    const password  = loginForm.querySelector("input[type='password']").value;
+    try {
+        const res = await fetch("http://localhost:5000/api/v0/users/login",{
+            method:"POST",
+            headers:{"Content-type":"application/json"},
+            body:JSON.stringify({email,password}),
+        });    
+        const data = await res.json();
+        if(res.ok){
+            alert("Logged in successfully");
+        }
+        else{
+            alert(data.message || "Something went wrong during login");
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Network error');
+    }
+});
